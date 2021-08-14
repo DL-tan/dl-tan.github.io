@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="爱思助手目前已支持iPhone 4S越狱后无SHSH降级至iOS6.1.3，降级iOS6.1.3后可在设备上检查更新升级到iOS8.4.1系统。（可以直接从设备的“设置–&gt;通用–&gt;软件更新”升级到 8.4.1， 因为苹果设定6.1.3不能直接升级到 9.3.5. 所以也可以用这个方法升级到 8.4.1）本人感觉8.4.1也好卡！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iPhone4S&#x2F;降级6.1.3教程">
+<meta property="og:url" content="http://example.com/2020/05/09/iphone4s/index.html">
+<meta property="og:site_name" content="好大一只鹅的Blog">
+<meta property="og:description" content="爱思助手目前已支持iPhone 4S越狱后无SHSH降级至iOS6.1.3，降级iOS6.1.3后可在设备上检查更新升级到iOS8.4.1系统。（可以直接从设备的“设置–&gt;通用–&gt;软件更新”升级到 8.4.1， 因为苹果设定6.1.3不能直接升级到 9.3.5. 所以也可以用这个方法升级到 8.4.1）本人感觉8.4.1也好卡！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/4s.png">
+<meta property="og:image" content="http://example.com/images/56.png">
+<meta property="og:image" content="http://example.com/images/57.png">
+<meta property="og:image" content="http://example.com/images/58.png">
+<meta property="og:image" content="http://example.com/images/59.png">
+<meta property="og:image" content="http://example.com/images/60.png">
+<meta property="article:published_time" content="2020-05-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-29T12:11:26.650Z">
+<meta property="article:author" content="谭睿             联系电话：15041150360 邮箱：926223804@qq.com 微信与电话同步">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/4s.png">
+
+<link rel="canonical" href="http://example.com/2020/05/09/iphone4s/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>iPhone4S/降级6.1.3教程 | 好大一只鹅的Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="好大一只鹅的Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">好大一只鹅的Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录我在黑苹果与iOS的心路历程</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">6</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/09/iphone4s/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="谭睿             联系电话：15041150360 邮箱：926223804@qq.com 微信与电话同步">
+      <meta itemprop="description" content="黑苹果与iOS">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="好大一只鹅的Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iPhone4S/降级6.1.3教程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-09 00:00:00" itemprop="dateCreated datePublished" datetime="2020-05-09T00:00:00+08:00">2020-05-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-29 20:11:26" itemprop="dateModified" datetime="2020-07-29T20:11:26+08:00">2020-07-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>爱思助手目前已支持iPhone 4S越狱后无SHSH降级至iOS6.1.3，降级iOS6.1.3后可在设备上检查更新升级到iOS8.4.1系统。（可以直接从设备的“设置–&gt;通用–&gt;软件更新”升级到 8.4.1， 因为苹果设定6.1.3不能直接升级到 9.3.5. 所以也可以用这个方法升级到 8.4.1）本人感觉8.4.1也好卡！<span id="more"></span></p>
+<p>准备工作：<br>        　　<br>1、下载并安装爱思助手最新版7.50或以上版本；</p>
+<p> 2、下载设备对应的自制固件<br>iPhone4s固件(<a target="_blank" rel="noopener" href="http://d.updater.i4.cn/i4tools7/temp/ota_downgrade/ota_iPhone4,1.ipsw">http://d.updater.i4.cn/i4tools7/temp/ota_downgrade/ota_iPhone4,1.ipsw</a>)</p>
+<p>3、将设备越狱：如果设备处于未支持的越狱版本，可将设备升级至iOS9.3.5后再进行越狱将备设备越狱后，在Cydia中添加源：apt.so/i4tool 并安装插件将设备进入KDFU模式（我自己的爱思源加不进去，我用的91源apt.91.com搜索进入降级DFU模式）<br>  <img src="/images/4s.png" alt="(1223054802450"><br>4、进入KDFU模式后，打开爱思助手并重新连接设备，点击进入“刷机越狱 –&gt; 专业刷机”界面，点击“导入固件”，选择已下好的自制固件。<br>  <img src="/images/56.png" alt="(666)"><br>  <img src="/images/57.png" alt="(60)"></p>
+<p>5、导入固件后，点击“立即刷机”，然后会出现提示刷自制固件存在一定风险，此时点“强制刷机”刷机将会继续。<br>   <img src="/images/58.png" alt="(255103256)"><br>6、接下来爱思助手将会自动开始刷机，保持数据线连接稳定，等待刷机完成。<br>   <img src="/images/59.png" alt="(2253256)"><br>   <img src="/images/60.png" alt="(45734543)"><br>7、刷机完成后，设备自动开机后就会看到熟悉的iOS6界面了，激活就可以使用了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/05/%E9%BB%91%E8%8B%B9%E6%9E%9C(%E4%BA%8C)/" rel="prev" title="黑苹果系统安装教程（二）">
+      <i class="fa fa-chevron-left"></i> 黑苹果系统安装教程（二）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/10/5s/" rel="next" title="iPhone5s降级iOS10.3.3">
+      iPhone5s降级iOS10.3.3 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">谭睿             联系电话：15041150360 邮箱：926223804@qq.com 微信与电话同步</p>
+  <div class="site-description" itemprop="description">黑苹果与iOS</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">谭睿             联系电话：15041150360 邮箱：926223804@qq.com 微信与电话同步</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"live2d-widget-model-wanko"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false});</script></body>
+</html>
