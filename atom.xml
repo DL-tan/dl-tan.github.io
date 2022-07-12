@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2020-07-31T01:48:31.410Z</updated>
+  <updated>2020-07-29T12:10:21.000Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,92 +15,6 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>从clover转入open core</title>
-    <link href="http://example.com/2020/07/29/%E4%BB%8Eclover%E8%BD%AC%E5%85%A5open%20core/"/>
-    <id>http://example.com/2020/07/29/%E4%BB%8Eclover%E8%BD%AC%E5%85%A5open%20core/</id>
-    <published>2020-07-29T02:17:23.000Z</published>
-    <updated>2020-07-31T01:48:31.410Z</updated>
-    
-    <content type="html"><![CDATA[<p>众多黑苹果驱动的作者已经停止对Clover的兼容支持，改向Opencore的兼容。所以也许在未来的某一天，Clover就越来越难用了。提前了解了解OpenCore，还是很有必要的。但是OpenCore毕竟没有Clover成熟,同样也没有很好用的可视化编辑器（OpenCore Configurator会导致config出错，慎用），fix的选项也没有，对hotpatch的要求就高了。经过很多天的摸索，总结一些OC的坑，帮助以后的朋友少走一些弯路。</p><p>我的配置（这里借用朋友的笔记本，也正好锻炼一下自己的实力！！）<br>雷 神 G170P 笔 记 本，蓝 天(CLEVO)P170SMA模 具<br>CPU：Core i7-4710MQ 2.50GHz<br>主 板：CLEVO P17SM-A<br>硬 盘：威刚SSD 256GB<br>内 存：16 GB ( 威 刚 DDR3L 1600MHz )<br>显 卡：Nvidia GTX970M（DSDT屏蔽） Intel HD4600（此独显无法在高于10.13.6的系统下驱动，所以屏蔽掉）<br>有 线 网 卡：瑞 昱 RTL8168/8111/8112<br>无 线 网 卡：博通BCM94352HMB（原 装intel网 卡，无 解）<br>声 卡：Realtek ALC892<span id="more"></span></p><p>本篇目录<br>一.准备工作<br>二.调试Config.plist<br>三.调试驱动</p><p>一、准备工作</p><p>准备工作分为以下几步：</p><p> ①.在Clover引导下，正常运行macOS系统<br> ②.BIOS设置<br> ③.下载最新的OpenCore<br> ④.安装Xcode或使用ProperTree<br> ⑤.efi基础驱动<br> ⑥.U盘或硬盘建立引导分区<br> ⑦.确认电脑是否支持原生NVRAM<br> ① 至少要先用Clover安装系统，并能够正常进入macOS系统，这样能测试OC能方便很多。如果零基础从OC直接安装系统，难度比较大。对于已经配置好Clover的，则需要精简EFI，把不必要的驱动，dsdt和ssdt删除。防止OC使用过程中不兼容导致的问题。</p><p> ② BIOS设置<br> 禁用<br> | Fast Boot |             | 快速启动 |<br> | CFG Lock |             | CFG锁 |<br> | VT-d |                     | Hyper Threading |<br> | CSM |                     | 兼容性支持模块 |</p><p> 启用<br> | VT-x |                                | VT-x |<br> | Above 4G decoding |      | 大于4G地址空间解码 |<br> | Hyper Threading |           | 超线程|<br> | Execute Disable Bit |       | 执行禁止位 |<br> | EHCI/XHCI Hand-off |     | 接手EHCI/XHCI控制 |<br> |OS type:Windows 8.1/10|     |操作系统类型Windows8.1/10|</p><p> ③ 下载最新的OpenCore<br> 官方发布页下载的文件包里的Docs文件夹内的samplefull.plist改名为config.plist作为基础配置自己的OC。</p><p> ④ 对于OC中Config.plist，Xcode是最好的选择。其次是ProperTree。<br> Plist Editor Pro会破坏结构，不能转换Base64.<br> OpenCore Configurator目前更新速度落后于OpenCore，因此会导致Config的损坏 。</p><p> ⑤ efi基础驱动</p><p> ApfsDriverLoader.efi 或 Apfs.efi      识别APFS分区<br> FwRuntimeServices.efi     用来替换AptioMemoryFix.efi<br> UsbKbDxe.efi     OC内置驱动不工作，可以提供Apple热键和FileVault的支持。卡OC引导界面，可以删除<br> VirtualSMC.efi     配合VirtualSMC.kext使用，不能和FakeSMC.kext同时使用。<br> VBoxHfs.efi 或 HFSPlus.efi     识别HFS分区，对于不能进入Recovery，需要使用HFSPlus.efi和EmuVariableRuntimeDxe.efi     模拟NVRAM，对于没有原生NVRAM，需要此驱动（该驱动已和最新的FwRuntimeServices.efi合并，建议使用最新驱动)<br> 将需要的驱动，放置在EFI——OC——Drivers中，同时在Config.plist——UEFI——Drivers添加efi驱动名.</p><p>⑥ 使用硬盘工具新建一个esp(Fat16)新分区，空间不低于200MB来存放。U盘或硬盘分区都可以。我是在Windows中使用DiskGenius分的区。</p><p>⑦确认电脑是否支持原生NVRAM</p><p>打开终端输入：sudo nvram TestVar=HelloWorld然后输入密码<br>重启系统后输入：sudo nvram -p | grep ‘TestVar’<br>如果显示：TestVar HelloWorld<br>说明原生支持NVRAM</p><p>二、调试Config.plist</p><p>OC的Config.plist与Clover的Config.plist结构有很大的不同，因此不能通用。整体结构以及说明参考黑果小兵:精解OpenCore。</p><p>①Misc—security—requiresignature—NO<br>防止出现报错：OC:configuration signed vault but no public key provided</p><p>②misc—security—requirevault—NO<br>防止出现报错：OC：configuration requires vault but no vault procided</p><p>③可以删除 #WARNING - 1 和 #WARNING - 2等</p><p>④Booter—Quirks—DisableVariableWrite—NO<br>禁止NVRAM写入，没有原生macOS支持NVRAM需要开启</p><p>⑤DeviceProperties—Add可以加入设备硬件地址以及补丁可以使用Hackintool应用补丁生成设备硬件代码驱动硬件<br>例如：核显驱动、核显缓冲帧、EDID注入，声卡LayoutID注入、读卡器等等</p><p>注意：这里使用的代码与Clover的Config.plist中的Devices—Properties的代码通用<br>⑥OC上所有的kext、.efi驱动、.aml补丁都需要填入config.plist，并且都有加载顺序，有依赖的驱动要放在所依赖的驱动之后。</p><p>注意：Kernel—Add  按加载顺序加入kext名称<br>            ACPI—Add  按加载顺序加入.aml名称<br>            UEFI—Drivers  按加载顺序加入.efi驱动名称<br> ⑦Kernel—Quirks—XhciPortLimit: YES<br>USB的15个端口限制补丁，建议定制USB后关闭该选项</p><p> ⑧Misc—Boot—ShowPicker: YES<br>显示OpenCore的UI，可选引导项。</p><p> ⑨NVRAM—LegacyEnable: NO<br>允许将 NVRAM 存储在 nvram.plist 中, 没有原生 NVRAM 的设备必须开启</p><p> ⑩NVRAM—7C436110-AB2A-4BBB-A880-FE41995C9F82—csr-active-config： bytes = 0xe7030000 - SIP 完全关闭</p><p> ⑪设置默认语言为中文，在NVRAM—7C436110-AB2A-4BBB-A880-FE41995C9F82—prev-lang:kbd中填入&lt;7a682d48 616e733a 323532&gt;<br>（需要NVRAM支持，不支持原生NVRAM或者没弄好模拟NVRAM不生效）</p><p> ⑫Misc—Security—AllowNvramReset：YES<br>在OC引导界面显示 Reset NVRAM选项</p><p>注意：如果用Clover启动过系统后，再用OpenCore启动系统，需要执行Reset NVRAM来清除NVRAM。清除NVRAM，会清除BIOS自定义引导项名称。<br> ⑬Misc—Security—ScanPolicy：0<br>在OC引导界面显示所有可用硬盘</p><p>定义：<br>（01）0x00000001 — 限定为文件系统，由以下允许扫描文件系统子项开启<br>（02）0x00000002 — 限定为设备类型，由以下允许扫描设备类型子项开启<br>​ 允许扫描文件系统子项：<br>（03）0x00000100 — 允许扫描APFS文件系统<br>（04）0x00000200 — 允许扫描HFS文件系统<br>（05）0x00000400 — 允许扫描EFI系统分区文件系统<br>​ 允许扫描设备类型子项：<br>（06）0x00010000 — 允许扫描SATA设备<br>（07）0x00020000 — 允许扫描SAS和Mac NVMe设备<br>（08）0x00040000 — 允许扫描SCSI设备<br>（09）0x00080000 — 允许扫描NVMe设备<br>（10）0x00100000 — 允许扫描CD / DVD设备<br>（11）0x00200000 — 允许扫描USB设备<br>（12）0x00400000 — 允许扫描FireWire设备<br>（13）0x00800000 — 允许扫描读卡器设备<br>扫描策略数值=（01）+（02）+1个或数个允许扫描文件系统子项+1个或数个允许扫描设备类型子项<br>例如：希望扫描对象是APFS文件系统的USB设备，扫描策略数值=（01）+（02）+（03）+（11），经16进制加法计算得出，扫描策略数值=0x200103。<br>注意，使用时需将16进制转换为10进制。示例最终扫描策略数值=2097411<br>⑭ACPI—Patch放入dsdt、ssdt补丁<br>Kernel—Patch放入kext补丁</p><p> ⑮PlatformInfo中直接删除Datahub,PlatfromNVRAM,SMBIOS这三项，无需填写。</p><p>注意：部分OpenCore卡引导项，是由于UsbKbDxe.efi与键盘不兼容导致的，删除UsbKbDxe.efi即可</p><p>三、调试驱动</p><p>以我自身的驱动来说明<br><img src="/images/1366866-dfeb9c7504f72bf8.png" alt="(1)"><br>①建议使用VirtualSMC.kext，因为需要与Drivers中的VirtualSMC.efi配合<br>②建议定制USB驱动，如自定义的USBInjectAll.kext、USBPorts.Kext、或加载SSDT-UIAC<br>③建议定制声卡驱动，虽然万能声卡驱动也支持OC<br>④VoodooPS2Controller.kext与ApplePS2SmartTouchPad.kext中存在插件kext，在Config.plist中Kernel—Add分别加入<br>⑤.kext中没有驱动，只有info.plist的，Kernel—Add加入info.plist的path，不必加入kext的path。<br>⑥建议核显驱动使用Hackintool应用补丁生成核显代码、相关补丁以及EDID的注入，防止添加过多kext影响兼容性，同时定义CPU接口，方便加载HDMI视频音频<br><img src="1366866-722282d88d4e7050.png" alt="(2)"><br>四、OpenCore版本更新</p><p>写这篇文章时我的系统版本是10.15.1，OC是0.5.2。之后更新为10.15.3和0.5.5。<br>更新OpenCore版本需要注意以下四点：<br>①做好原有EFI的备份，config.plist—NVRAM—Add—7C4361……—boot-args中添加-v，更新时出错，可以及时发现问题</p><p>②下载最新OpenCore，替换原有EFI中的Bootx64.efi和OpenCore.efi</p><p>③最新OpenCore—Drivers找到需要的驱动，对原有EFI中的Drivers驱动进行替换<br>注：在0.5.5后Divers最新驱动已经合并到最新的OpenCore中</p><p>④查看最新OpenCore—Docs—SampleFull.plist中是否有更新，如有更新可以查看作者的说明进行修改，没有则直接使用之前的config.plist</p><p>为方便大家学习交流，附上我OpenCore的EFI<br>OCEFI：<a href="https://pan.baidu.com/s/1om3IBf0Bg2A1a8ogJnUpOQ">https://pan.baidu.com/s/1om3IBf0Bg2A1a8ogJnUpOQ</a>   提取码：k8gu<br>大家加油！！！！！！！！！！！！！</p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;众多黑苹果驱动的作者已经停止对Clover的兼容支持，改向Opencore的兼容。所以也许在未来的某一天，Clover就越来越难用了。提前了解了解OpenCore，还是很有必要的。但是OpenCore毕竟没有Clover成熟,同样也没有很好用的可视化编辑器（OpenCore Configurator会导致config出错，慎用），fix的选项也没有，对hotpatch的要求就高了。经过很多天的摸索，总结一些OC的坑，帮助以后的朋友少走一些弯路。&lt;/p&gt;
-&lt;p&gt;我的配置（这里借用朋友的笔记本，也正好锻炼一下自己的实力！！）&lt;br&gt;雷 神 G170P 笔 记 本，蓝 天(CLEVO)P170SMA模 具&lt;br&gt;CPU：Core i7-4710MQ 2.50GHz&lt;br&gt;主 板：CLEVO P17SM-A&lt;br&gt;硬 盘：威刚SSD 256GB&lt;br&gt;内 存：16 GB ( 威 刚 DDR3L 1600MHz )&lt;br&gt;显 卡：Nvidia GTX970M（DSDT屏蔽） Intel HD4600（此独显无法在高于10.13.6的系统下驱动，所以屏蔽掉）&lt;br&gt;有 线 网 卡：瑞 昱 RTL8168/8111/8112&lt;br&gt;无 线 网 卡：博通BCM94352HMB（原 装intel网 卡，无 解）&lt;br&gt;声 卡：Realtek ALC892</summary>
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>iPhone5s降级iOS10.3.3</title>
-    <link href="http://example.com/2020/05/10/5s/"/>
-    <id>http://example.com/2020/05/10/5s/</id>
-    <published>2020-05-09T16:00:00.000Z</published>
-    <updated>2020-07-29T12:09:51.470Z</updated>
-    
-    <content type="html"><![CDATA[<p>iPhone5s降级iOS10.3.3<br>要求<br>运行10.14.x或更高版本的MacOS计算机（Hackintosh或合法Mac）（虚拟机不工作，CHECKM8在虚拟机中不工作）兼容的iOS设备-如果您的设备是32位设备，则需要在安装了OpenSSH的情况下越狱（某些设备在安装OpenSSH后需要重新启动并重新越狱）<span id="more"></span></p><p>阅读本自述文件的能力<br>设备支持<br>iOS 10.3.3<br>iPhone 5s<br>用法<br>Usage: viuex [OPTIONS] [IPSW PATH (If required)]<br>Options:<br>  -i, –ipsw PATH        Path to IPSW file<br>  -c, –clean              Clean up any leftover files<br>  -k, –kdfu PATH        “Path/To/patchiBSS” Enter KDFU mode (32 Bit Only, device must be jailbroken)<br>  -l, –list              List what devices can be restored to what iOS versions<br>  -p, –pwn           Enter PWNDFU mode, which will also apply sig patches (64 Bit Only)<br>  -r, –restore          “Path/To/.ipsw” Just restore to a custom ipsw<br>  -s, –shsh PATH      “Path/To/Save/Location/“ Save OTA blobs to a given path for future use (64 Bit Only)<br>  -v, –version            List the version of the tool<br>  -y, –credits            List credits and Big Yoshi</p><p>安装依赖<br>需要Python3（至少3.5）<br>运行“ pip3 install -r requirements.txt”以安装所有依赖项<br>使用说明<br>1.’pip3 install -r requirements.txt’安装所有依赖项<br>2.’cd’到下载的’Vieux’文件夹中<br>3.运行’./vieux -i“ PATH / TO / .ipsw”’，或者，如果该命令不起作用，则运行’python3 vieux -i“ PATH / TO / .ipsw”’<br>4.照着工具的提示来完成或继续操作，看不懂英文请机翻。<br>常问问题<br>如何使用此工具？<br>如果您有64位设备（iPhone 5s，iPad Mini 2，iPad Air），则只需以DFU模式连接设备并运行该工具。<br>为什么该工具无法运行？<br>尝试使用此工具之前，请确保已运行“ pip3 install -r requirements.txt”。如果仍不能解决问题，请对该错误进行屏幕截图，然后给我打电话或加微信和QQ。</p><p>什么时候支持其他操作系统？EG Linux，Windows等…<br>由于Windows是任何与iOS相关的东西的糟糕操作系统，因此很可能永远不会有Windows支持。Linux支持是可能的，并且很可能会在以后提供。仅适用于macOS，Mojave最好，但Catalina可以工作。因为已经更新对Catalina的补丁。再低于Mojave，则未经测试且没有官方支持，但可以尝试一下，如果不起作用，请不要期待我的任何帮助。因为我们没有试过！如果问的话，那就是升级你的macOS版本至Mojave！</p><p>OK，说了这么多，其实就是我懒，懒得贴图！那么我们下面来整理一下步骤吧！<br>1.下载python3.7，直接官网，不贴链接！<br>2.爱思下载对应型号的固件。<br>3.打开终端，输入cd，按空格，将下载好的文件夹（文末提供地址）拖入终端窗口。<br>4.输入pip3 install -r requirements.txt，回车，等待安装依赖完成。<br>5.手机进入DFU模式后连接电脑，输入python3 vieux -i，按空格，将下载好的固件拖入终端窗口，按回车。<br>6.等待，等待，直到开始跑进度条！<br>好的，至此操作结束喽！！<br>我看好多论坛上说自己homebrew没安好，我都没安，直接一遍过，我也不知到怎么搞的，反正大家有疑问可以给我打电话，加我微信和QQ，我只要看到，我就会尽我所能帮助你们哦。</p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;iPhone5s降级iOS10.3.3&lt;br&gt;要求&lt;br&gt;运行10.14.x或更高版本的MacOS计算机（Hackintosh或合法Mac）（虚拟机不工作，CHECKM8在虚拟机中不工作）兼容的iOS设备-如果您的设备是32位设备，则需要在安装了OpenSSH的情况下越狱（某些设备在安装OpenSSH后需要重新启动并重新越狱）</summary>
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>iPhone4S/降级6.1.3教程</title>
-    <link href="http://example.com/2020/05/09/iphone4s/"/>
-    <id>http://example.com/2020/05/09/iphone4s/</id>
-    <published>2020-05-08T16:00:00.000Z</published>
-    <updated>2020-07-29T12:11:26.650Z</updated>
-    
-    <content type="html"><![CDATA[<p>爱思助手目前已支持iPhone 4S越狱后无SHSH降级至iOS6.1.3，降级iOS6.1.3后可在设备上检查更新升级到iOS8.4.1系统。（可以直接从设备的“设置–&gt;通用–&gt;软件更新”升级到 8.4.1， 因为苹果设定6.1.3不能直接升级到 9.3.5. 所以也可以用这个方法升级到 8.4.1）本人感觉8.4.1也好卡！<span id="more"></span></p><p>准备工作：<br>        　　<br>1、下载并安装爱思助手最新版7.50或以上版本；</p><p> 2、下载设备对应的自制固件<br>iPhone4s固件(<a href="http://d.updater.i4.cn/i4tools7/temp/ota_downgrade/ota_iPhone4,1.ipsw">http://d.updater.i4.cn/i4tools7/temp/ota_downgrade/ota_iPhone4,1.ipsw</a>)</p><p>3、将设备越狱：如果设备处于未支持的越狱版本，可将设备升级至iOS9.3.5后再进行越狱将备设备越狱后，在Cydia中添加源：apt.so/i4tool 并安装插件将设备进入KDFU模式（我自己的爱思源加不进去，我用的91源apt.91.com搜索进入降级DFU模式）<br>  <img src="/images/4s.png" alt="(1223054802450"><br>4、进入KDFU模式后，打开爱思助手并重新连接设备，点击进入“刷机越狱 –&gt; 专业刷机”界面，点击“导入固件”，选择已下好的自制固件。<br>  <img src="/images/56.png" alt="(666)"><br>  <img src="/images/57.png" alt="(60)"></p><p>5、导入固件后，点击“立即刷机”，然后会出现提示刷自制固件存在一定风险，此时点“强制刷机”刷机将会继续。<br>   <img src="/images/58.png" alt="(255103256)"><br>6、接下来爱思助手将会自动开始刷机，保持数据线连接稳定，等待刷机完成。<br>   <img src="/images/59.png" alt="(2253256)"><br>   <img src="/images/60.png" alt="(45734543)"><br>7、刷机完成后，设备自动开机后就会看到熟悉的iOS6界面了，激活就可以使用了。</p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;爱思助手目前已支持iPhone 4S越狱后无SHSH降级至iOS6.1.3，降级iOS6.1.3后可在设备上检查更新升级到iOS8.4.1系统。（可以直接从设备的“设置–&amp;gt;通用–&amp;gt;软件更新”升级到 8.4.1， 因为苹果设定6.1.3不能直接升级到 9.3.5. 所以也可以用这个方法升级到 8.4.1）本人感觉8.4.1也好卡！</summary>
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>黑苹果系统安装教程（二）</title>
-    <link href="http://example.com/2020/05/05/%E9%BB%91%E8%8B%B9%E6%9E%9C(%E4%BA%8C)/"/>
-    <id>http://example.com/2020/05/05/%E9%BB%91%E8%8B%B9%E6%9E%9C(%E4%BA%8C)/</id>
-    <published>2020-05-04T16:00:00.000Z</published>
-    <updated>2020-07-29T12:11:10.270Z</updated>
-    
-    <content type="html"><![CDATA[<p>这里我重新安装了一套配置，也是给学生党的一套非常好的配置。如果喜欢别的配置，请别喷。下面附上截图。<br><img src="/images/78.png" alt="(14346)"><br>配置如下：<br>CPU：Intel i3-8100散片  目前淘宝价格大概为645米<br>主板：ASUS H310M-E R2.0 （虽然有点丐，不过很好用，使用核显，接入HDMI视频线，很香）  目前淘宝报价大概为459米<br>显卡：UHD-630（核显）使用whatevergreen加lilu实现原生驱动。<br>声卡：alc887（注入ID为11或13）<br>配置大概就这么个配置，大家自行斟酌！！！<span id="more"></span></p><p>本人已在盆友的帮助下成功吃上了oc引导，在此感谢：HUAWEI  P8似水流年 · 卓然ღ</p><p>我这配置安装加驱动只花了不到三个小时，非常简单，所以我水一下文章，大家不要介意。<br>这篇文章我采用文字形式来教学。（主要因为我懒，安装时没留下截图）</p><p>正文开始：<br>1.我们先来说说显卡的问题，七代八代以及九代Intel的核显驱动可以在（efi/clover/kext/kext-other/）这个路径来加入最新版的whatevergreen.kext和Lilu.kext文件来实现原生驱动。这里说一下，VGA不可以在黑苹果里实现驱动的，没有任何办法。<br>2.我们再来说声卡，大多配置的声卡都是alc开头加数字结尾的声卡型号，这需要在clover configurator中注入声卡ID，并在（efi/clover/kext/kext-other/）这个路径里添加applealc.kext文件，声卡驱动所用的对应声卡型号的ID在这个链接里(<a href="https://blog.daliansky.net/AppleALC-Supported-codecs.html)%E8%AF%B7%E5%A4%A7%E5%AE%B6%E8%87%AA%E8%A1%8C%E6%9F%A5%E6%89%BE%E5%93%A6%E3%80%82">https://blog.daliansky.net/AppleALC-Supported-codecs.html)请大家自行查找哦。</a></p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;这里我重新安装了一套配置，也是给学生党的一套非常好的配置。如果喜欢别的配置，请别喷。下面附上截图。&lt;br&gt;&lt;img src=&quot;/images/78.png&quot; alt=&quot;(14346)&quot;&gt;&lt;br&gt;配置如下：&lt;br&gt;CPU：Intel i3-8100散片  目前淘宝价格大概为645米&lt;br&gt;主板：ASUS H310M-E R2.0 （虽然有点丐，不过很好用，使用核显，接入HDMI视频线，很香）  目前淘宝报价大概为459米&lt;br&gt;显卡：UHD-630（核显）使用whatevergreen加lilu实现原生驱动。&lt;br&gt;声卡：alc887（注入ID为11或13）&lt;br&gt;配置大概就这么个配置，大家自行斟酌！！！</summary>
-    
-    
-    
-    
-  </entry>
-  
-  <entry>
-    <title>黑苹果系统安装教程（一）</title>
-    <link href="http://example.com/2020/05/03/%E9%BB%91%E8%8B%B9%E6%9E%9C(%E4%B8%80)/"/>
-    <id>http://example.com/2020/05/03/%E9%BB%91%E8%8B%B9%E6%9E%9C(%E4%B8%80)/</id>
-    <published>2020-05-02T16:00:00.000Z</published>
-    <updated>2020-07-29T12:10:54.220Z</updated>
-    
-    <content type="html"><![CDATA[<p>写在前面：<br>目前笔记本想体验黑苹果，必须是intel处理器，AMD的CPU安装太费劲而且经常出现未知的bug。并且笔记本自带的显卡大多无法驱动，笔记本的N卡连webdriver都用不了，所以只能使用核显卡。而且大多数笔记本的无线网卡无法驱动，可以通过USB网卡替代或者直接更换网卡。建议更换的网卡型号为：DW1830、DW1560、DW1820（部分可用）、BCM94360CS2(拆机网卡)等，具体更换教程可以根据不同笔记本来定，有的板载网卡的只能用USB替代（USB的可使用小米随身wifi、360随身WiFi2代、COMFAST的）这次的教程我分两期来写，大家不要着急。<span id="more"></span></p><p>首先判断机子是否符合安装</p><p>英特尔酷睿CPU(笔记本赛扬，奔腾无法驱动显卡除非只有独显)。</p><p>支持UEFI启动。</p><p>显卡：笔记本须为酷睿CPU才可以驱动核显 想要驱动独显前提为BIOS能屏蔽核显</p><p>本文只讨论inter处理器的笔记本电脑和台式机，一些高端笔记本可以驱动双显卡，特殊机型不做讨论，AMD处理器电脑也不做讨论。</p><p>镜像的选择</p><p>本教程为原版安装，去黑果小兵官网下载此镜像教程以安装macOS High Sierra 10.13.6(17G65)为例。（现在版本已经出到了10.15.4。）<br>本镜像含有引导，对于小白可以直接使用里面对应的config试试。如果不行其他问题请百度解决。<br>准备工作</p><p>优盘8G以上。</p><p>检查磁盘是否符合安装原版，硬盘分区格式。</p><p>下载镜像。</p><p>DMG写入工具：Etcher。</p><p>1.选择镜像。<br><img src="/images/4.png" alt="(1)"></p><p>2.插u盘，插上会自动识别。<br><img src="/images/5.png" alt="(2)"></p><p>3.点Flash开始写镜像，会提示给予管理员权限，给予就好。时间根据u盘读写速度而定。（写入镜像会格式化u盘，请提前做好备份）</p><p><img src="/images/18172345-c9294ded9c6bf607.png" alt="(3)"></p><p>4.正在写入，耐心等待提示完成。</p><p><img src="/images/18172345-5e15868c2c6493a2.png" alt="(4)"></p><p><img src="/images/18172345-482d47672b24744b.png" alt="(5)"><br>将要安装macOS的磁盘分区表转换为GUID，再建立esp分区，建议300m起步。<br>u盘启动</p><p>将u盘插在电脑的usb2.0接口上设置为u盘启动</p><p>1.bios需要关闭安全启动（secure boot）。</p><p>2.需要bios打开uefi。</p><p>3.部分台式机bios下需要将启动系统改为其他。</p><p>4.打开AHCI，一般电脑默认打开了的。</p><p>BIOS情况复杂，只写了必要的几个设置。</p><p>安装</p><p>由于本镜像集成了黑苹果的引导，所以大家写入镜像后就可以直接u盘启动安装试试，运气好是可以直接进入安装界面的，如果运气不好卡住了另作讨论说明。</p><p>重启优盘UEFI启动 记得一定是UEFI优盘启动然后会看到如下的界面。</p><p><img src="/images/18172345-d3f7e7b5e29ce1ee.png" alt="(6)"></p><p>选择安装盘 如图红色框（看名字）按空格.<br><img src="/images/18172345-a1c3192ae5e550c9.png" alt="(7)"></p><p>勾选Verbose(-v),此项也就是啰嗦模式和Don`t reboot on panic(debug=0x100)此项能够让安装遇到问题不会重启方便查看问题。</p><p><img src="/images/18172345-a32ef64114ad1854.png" alt="(8)"></p><p>根据啰嗦模式的错误进行修改引导文件。</p><p>进入安装界面后先打开磁盘工具进行抹盘.<br><img src="/images/18172345-cda85f15c4fc1a16.png" alt="(9)"></p><p>选择要安装Mac的分区 抹掉。<br><img src="/images/18172345-6f077b140824264e.png" alt="(10)"><br>名字用英文，格式选择apfs，方案选择GUID。（我这里是全盘抹掉的，要抹掉单个分区选择单个分区点抹掉即可，如果在此提示错误 说分区小那是ESP分区小于200m）<br>此处还要拔网线，改时间，自行百度。</p><p>进行安装<br><img src="/images/18172345-40278fef0e508700.png" alt="(11)"></p><p>这里就不说了 也就是同意 继续的 如果是英文界面 有两个选项的都选右边那个</p><p>选择刚抹掉的分区安装</p><p><img src="/images/18172345-147e94289238fb93.png" alt="(12)"></p><p>选择后开始安装，这里会很快重启，重启后继续u盘启动。</p><p><img src="/images/18172345-861797a043ca7cb3.png" alt="(13)"><br>重启后会多出一个或多个启动项，选择Boot macOS Install from “你的磁盘名字”会车安装，安装很快还会再次重启，然后再选择这个启动项正常安装。当再次重启后应该就安装完成了，<br>会有一个Boot macOS from “你的磁盘名字”的启动项，悬着他启动就可以正常进入黑苹果开机引导界面了。</p><p><img src="/images/18172345-3fb8b6f368114724.png" alt="(14)"></p><p>后面则为正常设置，至此黑苹果的安装就完成了。</p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;写在前面：&lt;br&gt;目前笔记本想体验黑苹果，必须是intel处理器，AMD的CPU安装太费劲而且经常出现未知的bug。并且笔记本自带的显卡大多无法驱动，笔记本的N卡连webdriver都用不了，所以只能使用核显卡。而且大多数笔记本的无线网卡无法驱动，可以通过USB网卡替代或者直接更换网卡。建议更换的网卡型号为：DW1830、DW1560、DW1820（部分可用）、BCM94360CS2(拆机网卡)等，具体更换教程可以根据不同笔记本来定，有的板载网卡的只能用USB替代（USB的可使用小米随身wifi、360随身WiFi2代、COMFAST的）这次的教程我分两期来写，大家不要着急。</summary>
-    
-    
-    
-    
-  </entry>
   
   <entry>
     <title>抓包教程</title>
